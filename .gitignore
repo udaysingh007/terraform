@@ -3,5 +3,6 @@
 *.tfstate
 *.tfstate.backup
 *.lock.hcl
+.creds.json
 
 
