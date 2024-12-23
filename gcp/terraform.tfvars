@@ -1,0 +1,7 @@
+project_name = "my-gcp-project"
+project_id   = "my-gcp-project-id"
+org_id       = "your-org-id"
+vpc_cidr     = "10.0.0.0/16"
+vm_size      = "n1-standard-1"  # or any valid machine type, e.g., "e2-medium"
+region       = "us-central1"
+zone         = "us-central1-a"
