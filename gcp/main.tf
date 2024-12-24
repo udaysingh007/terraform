@@ -1,14 +1,14 @@
 provider "google" {
-  project = var.project_name
+  project = var.project_id
   region  = var.region
   zone    = var.zone
 }
 
-resource "google_project" "project" {
-  name       = var.project_name
-  project_id = var.project_id
-  org_id     = var.org_id
-}
+#resource "google_project" "project" {
+#  name       = var.project_name
+#  project_id = var.project_id
+#  billing_account     = var.billing_acct_id
+#}
 
 resource "google_compute_network" "vpc" {
   name                    = "${var.project_name}-vpc"

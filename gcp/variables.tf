@@ -8,8 +8,8 @@ variable "project_id" {
   type        = string
 }
 
-variable "org_id" {
-  description = "The organization ID"
+variable "billing_acct_id" {
+  description = "The billing account ID"
   type        = string
 }
 
