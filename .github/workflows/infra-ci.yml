@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   
 jobs:
-  terraform:
+  plan:
     name: Terraform Workflow
     runs-on: ubuntu-latest
 
@@ -32,13 +32,43 @@ jobs:
         run: terraform plan -out=tfplan
         working-directory: ./gcp
 
-      # Apply Terraform (requires approval)
+  # Manual Approval Step
+  approval:
+    name: Manual Approval
+    needs: plan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Await Manual Approval
+        run: |
+          echo "Please approve this job manually in the GitHub Actions UI."
+          echo "Once approved, the 'apply' step will proceed."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Terraform Apply after Approval
+  apply:
+    name: Terraform Apply
+    needs: approval
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code again (required because each job is isolated)
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Change directory to 'gcp'
+      - name: Change Directory to GCP
+        run: cd gcp
+
+      # Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7  # Adjust to your desired Terraform version
+
+      # Apply Terraform
       - name: Terraform Apply
-        working-directory: ./gcp
-        if: github.event_name == 'pull_request'
         env:
           TF_VAR_example_variable: ${{ secrets.TF_VAR_EXAMPLE_VARIABLE }}
-        run: |
-          echo "To apply changes, a manual approval is required."
-      #    terraform apply -auto-approve tfplan
-
+        run: terraform apply -auto-approve tfplan
