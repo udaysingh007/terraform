@@ -22,26 +22,19 @@ jobs:
         with:
           terraform_version: 1.5.7  # Adjust to your desired Terraform version
 
-      - name: list current directory
-        run: ls -al ./
-        
-      # Change directory to 'gcp'
-      - name: Change Directory to GCP
-        run: cd ./gcp
-        
-      - name: list current directory
-        run: ls -al ./
-
       # Initialize Terraform
       - name: Terraform Init
         run: terraform init
-
+        working-directory: ./gcp
+        
       # Plan Terraform
       - name: Terraform Plan
         run: terraform plan -out=tfplan
+        working-directory: ./gcp
 
       # Apply Terraform (requires approval)
       - name: Terraform Apply
+        working-directory: ./gcp
         if: github.event_name == 'pull_request'
         env:
           TF_VAR_example_variable: ${{ secrets.TF_VAR_EXAMPLE_VARIABLE }}
