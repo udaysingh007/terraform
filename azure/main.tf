@@ -23,10 +23,7 @@ resource "azurerm_service_plan" "sp" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   os_type             = "Linux"
-  sku {
-    tier = "Dynamic"
-    size = "Y1"
-  }
+  sku_name            = "Y1"
 }
 
 # Azure Function
@@ -37,11 +34,29 @@ resource "azurerm_linux_function_app" "function" {
   service_plan_id     = azurerm_service_plan.sp.id
   storage_account_name = azurerm_storage_account.sa.name
   storage_account_access_key = azurerm_storage_account.sa.primary_access_key
-  version             = "~4"
+  # version             = "~4"
 
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME = "node"
   }
+
+  site_config {
+    # Forces the app to use HTTPS
+    always_on                 = true
+    ftps_state                = "Disabled"
+
+    # App CommandLine settings (optional, for custom containers or specific needs)
+    app_command_line          = "npm start"
+
+    # Websockets support
+    websockets_enabled        = true
+
+    # Number of pre-warmed instances
+    pre_warmed_instance_count = 1
+
+    # HTTP2 Support
+    http2_enabled             = true
+  }  
 }
 
 # API Management Service
