@@ -27,7 +27,7 @@ jobs:
         
       # Change directory to 'gcp'
       - name: Change Directory to GCP
-        run: cd gcp
+        run: cd ./gcp
         
       - name: list current directory
         run: ls -al ./
