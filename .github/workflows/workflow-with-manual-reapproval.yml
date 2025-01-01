@@ -1,4 +1,4 @@
-name: Workflow with Approval
+name: PR Workflow with Approval
 
 on:
   pull_request:
@@ -27,15 +27,21 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const issue_number = github.context.payload.pull_request.number;
+            const issue_number = github.context.payload.pull_request ? github.context.payload.pull_request.number : 'Unknown PR';
             const owner = github.context.repo.owner;
             const repo = github.context.repo.repo;
 
+            // If PR context is missing, notify that it is manual approval request
+            const message = github.context.payload.pull_request ? 
+              `Workflow requires manual approval. Please trigger the next step using workflow_dispatch.` :
+              `Manual approval is required to proceed. Please trigger this manually.`;
+
+            // Create a comment
             await github.rest.issues.createComment({
               issue_number,
               owner,
               repo,
-              body: "Workflow requires manual approval. Please trigger the next step using workflow_dispatch."
+              body: message
             });
 
   # Second Job: Requires manual approval to proceed
