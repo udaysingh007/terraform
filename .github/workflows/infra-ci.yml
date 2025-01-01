@@ -30,14 +30,14 @@ jobs:
           export_default_credentials: true
 
       # Authenticate using GCP credentials
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      #- name: Authenticate to Google Cloud
+      #  uses: google-github-actions/auth@v1
+      #  with:
+      #    credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       # save GCP credentials JSON
       - name: Create credentials file
-        run: echo "${{ secrets.GCP_CREDENTIALS }}" > gcp-credentials.json
+        run: echo "${{ secrets.GCP_CREDENTIALS }}" > base64 -d > gcp-credentials.json
 
       # cat GCP credentials JSON
       - name: print credentials file
