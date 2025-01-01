@@ -5,7 +5,7 @@ provider "google" {
   zone    = var.zone
 }
 
-# create vpc
+# create vpc for use by the VM1
 resource "google_compute_network" "vpc" {
   name                    = "${var.project_name}-vpc"
   auto_create_subnetworks = false
