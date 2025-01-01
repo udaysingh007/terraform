@@ -22,6 +22,19 @@ jobs:
         with:
           terraform_version: 1.5.7  # Adjust to your desired Terraform version
 
+      # Setup Google Cloud SDK
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: 'latest'
+          export_default_credentials: true
+
+      # Authenticate using GCP credentials
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
       # Initialize Terraform
       - name: Terraform Init
         run: terraform init
@@ -57,18 +70,26 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Change directory to 'gcp'
-      - name: Change Directory to GCP
-        run: cd gcp
-
       # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7  # Adjust to your desired Terraform version
 
+      # Setup Google Cloud SDK
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: 'latest'
+          export_default_credentials: true
+
+      # Authenticate using GCP credentials
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
       # Apply Terraform
       - name: Terraform Apply
-        env:
-          TF_VAR_example_variable: ${{ secrets.TF_VAR_EXAMPLE_VARIABLE }}
         run: terraform apply -auto-approve tfplan
+        working-directory: ./gcp
