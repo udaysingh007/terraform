@@ -8,7 +8,7 @@ on:
 
 jobs:
   # First Job: Automatically triggered for tasks
-  workflow:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,33 +23,19 @@ jobs:
           exit 1
         continue-on-error: true
 
-      - name: Notify for Approval
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const issue_number = github.context.payload.pull_request ? github.context.payload.pull_request.number : 'Unknown PR';
-            const owner = github.context.repo.owner;
-            const repo = github.context.repo.repo;
-
-            // If PR context is missing, notify that it is manual approval request
-            const message = github.context.payload.pull_request ? 
-              `Workflow requires manual approval. Please trigger the next step using workflow_dispatch.` :
-              `Manual approval is required to proceed. Please trigger this manually.`;
-
-            // Create a comment
-            await github.rest.issues.createComment({
-              issue_number,
-              owner,
-              repo,
-              body: message
-            });
-
-  # Second Job: Requires manual approval to proceed
-  approval:
+  manual-approval:
+    name: Manual Approval
     runs-on: ubuntu-latest
-    needs: workflow
-    if: ${{ github.event_name == 'workflow_dispatch' }} # Runs only on manual trigger
+    needs: build
+    if: success() # Only proceed if terraform-plan job succeeds
 
     steps:
-      - name: Proceed after manual approval
-        run: echo "Manual approval granted. Continuing workflow."
+      - name: Await Manual Approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: udaysingh007
+          minimum-approvals: 1
+          issue-title: "Manual Approval Required for Terraform Apply"
+          issue-body: "Please approve or deny the deployment."
+          
