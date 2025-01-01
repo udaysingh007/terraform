@@ -1,0 +1,38 @@
+name: PR Workflow with Approval
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+  
+jobs:
+  workflow:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Task 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Task 2: Run a task that may return a soft error
+      - name: Run soft-error-prone task
+        id: soft_task
+        run: |
+          echo "Running task with potential soft error..."
+          # Simulate a soft error (non-zero exit but continue execution)
+          exit 1
+        continue-on-error: true
+
+      # Task 3: Pause for manual approval
+      - name: Wait for manual approval
+        if: always() # Ensure this runs regardless of the soft error
+        uses: peter-evans/wait-for-approval@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          approvers: 'your-username'
+          comment-identifier: approval-required
+
+      # Task 4: Proceed if approved
+      - name: Proceed after approval
+        run: echo "Workflow resumed after manual approval."
+        if: success() # Only runs if the manual approval was granted
