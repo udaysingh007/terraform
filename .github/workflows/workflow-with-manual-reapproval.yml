@@ -3,34 +3,47 @@ name: Workflow with Approval
 on:
   pull_request:
     types: [opened, synchronize]
-  workflow_dispatch:
-  
+
+  workflow_dispatch: # Enables manual triggers for approval
+
 jobs:
+  # First Job: Automatically triggered for tasks
   workflow:
     runs-on: ubuntu-latest
 
     steps:
-      # Task 1: Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Task 2: Run a task that may return a soft error
       - name: Run soft-error-prone task
         id: soft_task
         run: |
           echo "Running task with potential soft error..."
-          # Simulate a soft error (non-zero exit but continue execution)
+          # Simulate a soft error
           exit 1
         continue-on-error: true
 
-  approval:
-    runs-on: ubuntu-latest
-    needs: workflow
-
-    steps:
-      # Approval Step (Manual Interaction)
-      - name: Approval Step
+      - name: Notify for Approval
         uses: actions/github-script@v6
         with:
           script: |
-            const context = get Gitub
+            const issue_number = github.context.payload.pull_request.number;
+            const owner = github.context.repo.owner;
+            const repo = github.context.repo.repo;
+
+            await github.rest.issues.createComment({
+              issue_number,
+              owner,
+              repo,
+              body: "Workflow requires manual approval. Please trigger the next step using workflow_dispatch."
+            });
+
+  # Second Job: Requires manual approval to proceed
+  approval:
+    runs-on: ubuntu-latest
+    needs: workflow
+    if: ${{ github.event_name == 'workflow_dispatch' }} # Runs only on manual trigger
+
+    steps:
+      - name: Proceed after manual approval
+        run: echo "Manual approval granted. Continuing workflow."
