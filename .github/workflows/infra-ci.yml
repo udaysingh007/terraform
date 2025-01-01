@@ -41,7 +41,7 @@ jobs:
 
       # cat GCP credentials JSON
       - name: print credentials file
-        run: cat  =${{ github.workspace }}/gcp-credentials.json
+        run: cat ${{ github.workspace }}/gcp-credentials.json
       
       # Initialize Terraform
       - name: Terraform Init
