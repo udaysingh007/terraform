@@ -35,6 +35,10 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
+      # save GCP credentials JSON
+      - name: Create credentials file
+        run: echo "${{ secrets.GCP_CREDENTIALS }}" > gcp-credentials.json
+      
       # Initialize Terraform
       - name: Terraform Init
         run: terraform init
@@ -42,7 +46,7 @@ jobs:
         
       # Plan Terraform
       - name: Terraform Plan
-        run: terraform plan -input=false -out=tfplan
+        run: terraform plan -input=false -out=tfplan -var="credentials_file_path=${{ github.workspace }}/gcp-credentials.json"
         working-directory: ./gcp
         env:
           TF_LOG: DEBUG
