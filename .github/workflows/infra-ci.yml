@@ -35,6 +35,10 @@ jobs:
       #  with:
       #    credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
+      # print base64 encoded GCP credentials JSON
+      - name: print base64 encoded gcp credentials
+        run: echo "${{ secrets.GCP_CREDENTIALS }}" 
+
       # save GCP credentials JSON
       - name: Create credentials file
         run: echo "${{ secrets.GCP_CREDENTIALS }}" > base64 -d > gcp-credentials.json
