@@ -42,8 +42,12 @@ jobs:
         
       # Plan Terraform
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -input=false -out=tfplan
         working-directory: ./gcp
+        env:
+          TF_LOG: DEBUG
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        timeout-minutes: 10
 
   # Manual Approval Step
   approval:
@@ -93,3 +97,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         working-directory: ./gcp
+        env:
+          TF_LOG: DEBUG
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        timeout-minutes: 10
