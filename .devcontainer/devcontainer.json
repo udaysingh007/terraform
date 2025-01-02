@@ -1,0 +1,16 @@
+{
+    "name": "Terraform and Cloud CLIs",
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "settings": {
+      "terminal.integrated.defaultProfile.linux": "bash"
+    },
+    "extensions": [
+      "hashicorp.terraform",        // Terraform extension for VS Code
+      "ms-azuretools.vscode-docker" // Docker extension
+    ],
+    "postCreateCommand": "terraform --version && aws --version && az --version && gcloud --version",
+    "remoteUser": "vscode"
+}
+  
